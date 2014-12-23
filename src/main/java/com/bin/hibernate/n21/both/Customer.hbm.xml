@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.bin.hibernate.n21.both">
+    <class name="Customer" table="CUSTOMERS">
+        <id name="customerId" type="java.lang.Integer">
+            <column name="CUSTOMER_ID" />
+            <generator class="native" />
+        </id>
+        <property name="customerName" type="java.lang.String">
+            <column name="CUSTOMER_NAME" />
+        </property>
+        <!-- 映射1对多的那个集合属性 -->
+        <!--  
+        	>  set:映射set类型的属性,table:set中的元素对应的记录放在哪一个表中,表ming.
+        	>  inverse=true:让出关系维护权.通常在n的一端维护.
+        	>  cascade:设置级联操作.开发时不建议设定该属性.建议使用手工方式处理
+        		"delete":级联删除,删除1的时候同时删除n.
+        	>  order-by:在查询时对集合中的元素进行排序,order-by中使用的是表的字段名,而不是持久化类的属性名.
+        -->
+        <set name="orders" table="ORDERS" inverse="true" order-by="orderName">
+        	<key column="CUSTOMER_ID"></key><!-- 在n这一端的,外键字段名 -->
+        	<one-to-many class="Order"/><!-- 在n这一端的,类名 -->
+        </set>
+        
+
+    </class>
+</hibernate-mapping>

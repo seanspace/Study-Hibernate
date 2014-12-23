@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.bin.hibernate.one2one.primary">
+    <class name="Department" table="DEPARTMENT">
+        <id name="deptId" type="java.lang.Integer">
+            <column name="DEPT_ID" />
+            <!-- 使用外键的方式来生成当前主键 -->
+            <generator class="foreign" >
+            	<!-- property使用当前持久化类的哪一个属性的主键作为外键. -->
+            	<param name="property">mgr</param>
+            </generator>
+        </id>
+        <property name="deptName" type="java.lang.String">
+            <column name="DEPT_NAME" />
+        </property>
+        
+        <!--  
+        	constrained="true"表示在当前主键生成器中,添加一个外键约束
+        -->
+        <one-to-one name="mgr" class="Manager" constrained="true"></one-to-one>
+        
+    </class>
+</hibernate-mapping>

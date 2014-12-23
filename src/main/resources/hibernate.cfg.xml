@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+    	<!-- 配置连接数据库的基本信息 -->
+    	<!-- MySQL配置 -->
+    	<!-- 
+    	<property name="connection.username">root</property>
+    	<property name="connection.password">root</property>
+    	<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+    	<property name="connection.url">jdbc:mysql://localhost:3306/hibernate</property>
+    	<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+    	 -->
+    	<!-- Oracle配置 -->
+    	<property name="connection.username">scott</property>
+    	<property name="connection.password">1</property>
+    	<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+    	<property name="connection.url">jdbc:oracle:thin:@localhost:1521:orcl</property>
+    	<property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
+    	
+    	<!-- 启用二级缓存 -->
+    	<property name="cache.use_second_level_cache">true</property>
+    	<!-- 配置使用的二级缓存的产品 -->
+    	<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+    	<!-- 配置 启用查询缓存 -->
+    	<property name="cache.use_query_cache">true</property>
+    	<!-- 配置管理Session的方式 -->
+    	<property name="current_session_context_class">thread</property>
+    	
+    	
+    	<!-- 配置hibernate的基本信息 -->
+    	
+    	<!-- 执行操作时是否在控制台打印SQL -->
+    	<property name="show_sql">true</property>
+    	
+    	<!-- 是否对SQL进行格式化 -->
+    	<property name="format_sql">true</property>
+    	
+    	<!-- 指定自动生成数据表的策略 -->
+    	<property name="hbm2ddl.auto">update</property>
+    	
+    	<!-- 调用delete删除对象后,使其OID置为null,开发时用的也不多. -->
+    	<property name="use_identifier_rollback">true</property>
+    	
+    	<!-- 设置Hibernate的事务隔离级别 ,一共4种-->
+    	<!-- 
+    	<property name="connection.isolation">2</property>
+    	 -->
+    	<!--  
+    		配置C3p0数据源
+    	-->
+    	<!-- 
+    	<property name="hibernate.c3p0.max_size">10</property>
+    	<property name="hibernate.c3p0.min_size">2</property>
+    	<property name="hibernate.c3p0.acquire_increment">2</property>
+    	
+    	<property name="c3p0.idle_test_period">2000</property>
+    	<property name="c3p0.timeout">2000</property>
+    	
+    	<property name="c3p0.max_statements">10</property>
+    	 -->
+    	<!--  
+    		设置JDBC的Statement读取数据时,每次从数据库中取出的记录数.
+    		这个值取100比较合适 ;;这项对mysql无效,对oracle有效..
+    	-->
+    	<property name="hibernate.jdbc.fetch_size">100</property>
+    	<!-- 设置对数据库批量删除,批量更新和批量插入的时候的批次大小,
+    		   这个值取30比较合适 ;;这项对mysql无效,对oracle有效..
+    	-->
+    	<property name="hibernate.jdbc.batch_size">30</property>
+    	
+    	<!-- 指定关联的.hbm.xml文件 -->
+    	<!-- <mapping resource="com/bin/hibernate/helloworld/News.hbm.xml"/> -->
+    	<!-- 
+    	<mapping resource="com/bin/hibernate/session/News.hbm.xml"/>
+    	<mapping resource="com/bin/hibernate/session/Worker.hbm.xml"/>
+    	
+    	<mapping resource="com/bin/hibernate/n21/Customer.hbm.xml"/>
+    	<mapping resource="com/bin/hibernate/n21/Order.hbm.xml"/>
+    	 
+    	<mapping resource="com/bin/hibernate/n21/both/Customer.hbm.xml"/>
+    	<mapping resource="com/bin/hibernate/n21/both/Order.hbm.xml"/>
+    	
+    	 <mapping resource="com/bin/hibernate/one2one/foreign/Department.hbm.xml"/>
+    	 <mapping resource="com/bin/hibernate/one2one/foreign/Manager.hbm.xml"/>
+    	 
+    	 <mapping resource="com/bin/hibernate/one2one/primary/Department.hbm.xml"/>
+    	 <mapping resource="com/bin/hibernate/one2one/primary/Manager.hbm.xml"/>
+    	 
+    	 <mapping resource="com/bin/hibernate/n2n/Category.hbm.xml"/>
+    	 <mapping resource="com/bin/hibernate/n2n/Item.hbm.xml"/>
+    	 
+    	 <mapping resource="com/bin/hibernate/subclass/Person.hbm.xml"/>
+    	 
+    	 <mapping resource="com/bin/hibernate/joined/subclass/Person.hbm.xml"/>
+    	 
+    	 <mapping resource="com/bin/hibernate/union/subclass/Person.hbm.xml"/>
+    	 
+    	 
+    	<mapping resource="com/bin/hibernate/strategy/Customer.hbm.xml"/>
+    	<mapping resource="com/bin/hibernate/strategy/Order.hbm.xml"/>
+    	 -->
+    	<mapping resource="com/bin/hibernate/hql/entities/Department.hbm.xml"/>
+    	<mapping resource="com/bin/hibernate/hql/entities/Employee.hbm.xml"/>
+    	
+    	<!-- 配置对哪个类使用二级缓存.也可以在hbm.xml中配置使用二级缓存,以及策略,参考com.bin.hibernate.hql.entities.Department.hbm.xml -->
+    	<class-cache usage="read-only" class="com.bin.hibernate.hql.entities.Employee"/>
+    	<class-cache usage="read-only" class="com.bin.hibernate.hql.entities.Department"/>
+    	
+    	<!-- 注意:集合里的类,需要同时缓存(使用1)中的方式),否则,只缓存集合元素的iD,会多出n个sql,反而效率更低. -->
+    	<!-- 配置某个类的集合使用二级缓存:全类名+集合属性名 -->
+    	<collection-cache usage="read-only" collection="com.bin.hibernate.hql.entities.Department.emps"/>
+    	
+
+    	
+    </session-factory>
+</hibernate-configuration>

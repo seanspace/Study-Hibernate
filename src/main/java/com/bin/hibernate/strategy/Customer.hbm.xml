@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.bin.hibernate.strategy">
+    <class name="Customer" table="CUSTOMERS" batch-size="5">
+        <id name="customerId" type="java.lang.Integer">
+            <column name="CUSTOMER_ID" />
+            <generator class="native" />
+        </id>
+        <property name="customerName" type="java.lang.String">
+            <column name="CUSTOMER_NAME" />
+        </property>
+        
+        <!--  
+        	fethch:默认值select;
+        	lazy:默认true(懒加载) ;
+        	fecth:取值subselect将会忽略batch-size属性 ;初始化内存中所有set.
+        -->
+        <set name="orders" table="ORDERS" inverse="true" order-by="orderName"
+        	lazy="true" batch-size="5" fetch="join">
+        	<key column="CUSTOMER_ID"></key><!-- 在n这一端的,外键字段名 -->
+        	<one-to-many class="Order"/><!-- 在n这一端的,类名 -->
+        </set>
+        
+
+    </class>
+</hibernate-mapping>

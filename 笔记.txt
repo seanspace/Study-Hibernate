@@ -1,0 +1,148 @@
+
+
+1.安装hibernatetools-4.1.1.Final到eclipse中:步骤参照ppt ;网址:http://hibernate.org/tools/
+	> 作用:可以有提示,新建文件模板等
+
+2.HelloWorld:
+	1). jar包:
+		> hibernate:解压-->lib-->required,全部jar包;
+		> mysql驱动.C:\Program Files (x86)\MySQL\MySQL Connector J
+
+	2). 编码:
+		① 创建Hibernate配置文件:使用安装的插件新建 ;
+			> 关联配置文件中的DTD文件:http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd
+			 	本地目录:D:\文件系统\学习资料\插件框架\Hibernate\hibernate-release-4.3.6.Final\project\hibernate-core\src\main\resources\org\hibernate\hibernate-3.0dtd
+			> 以下文件可以参考常用的属性配置取值:hibernate-release-4.3.6.Final\project\etc\hibernate.properties
+			
+		② 创建持久化类.
+		③ 创建对象关系映射文件.利用工具生成hbm.xml
+		④ 通过HibernateAPI编写访问数据库的代码.
+		⑤
+	3). 注意:
+		> 由于开始使用文档中的org.hibernate.dialect.MySQLInnoDBDialect作为本机mysql5.6的数据库方言,
+			一直报错, 无法生成数据库表!!打印的sql语句如下:
+			    create table NEWS (
+			        ID integer not null auto_increment,
+			        TITLE varchar(255),
+			        AUTHOR varchar(255),
+			        DATE date,
+			        primary key (ID)
+			    ) type=InnoDB
+		> 后来使用改成:org.hibernate.dialect.MySQL5InnoDBDialect,注意多了个'5',就可以了,生成的sql语句如下:
+			    create table NEWS (
+			        ID integer not null auto_increment,
+			        TITLE varchar(255),
+			        AUTHOR varchar(255),
+			        DATE date,
+			        primary key (ID)
+			    ) ENGINE=InnoDB	
+	4).hibernate.properties和hibernate.cfg.xml是一样的.但是推荐使用xml方式.
+	5).hbm2ddl.auto的属性值:
+		> create:每次运行都生成数据库表.数据会丢失!
+		> create-drop:每次启动SessionFactory都生成数据表,但是关闭SessionFactory就会删除表.
+		> update:用有create的功能生成表,同时如果只是表的结构发生变化,就修改表结构.数据不会丢失!不会删除已有的行和列.
+		> validate:会和数据库表比较,若hbm.xml中的列在数据库表中不存在,则抛出异常!
+		
+3. 在hibernate中配置c3p0数据源:
+	1). 导入jar包:Hibernate\hibernate-release-4.3.6.Final\lib\optional\c3p0所有jar
+
+	2). 加入配置项
+		hibernate.c3p0.max_size: 数据库连接池的最大连接数
+		hibernate.c3p0.min_size: 数据库连接池的最小连接数
+		hibernate.c3p0.acquire_increment: 当数据库连接池中的连接耗尽时, 同一时刻获取多少个数据库连接
+		
+		hibernate.c3p0.timeout:   数据库连接池中连接对象在多长时间没有使用过后，就应该被销毁
+		hibernate.c3p0.idle_test_period:  表示连接池检测线程多长时间检测一次池内的所有链接对象是否超时. 连接池本身不会把自己从连接池中移除，而是专门有一个线程按照一定的时间间隔来做这件事，这个线程通过比较连接对象最后一次被使用时间和当前时间的时间差来和 timeout 做对比，进而决定是否销毁这个连接对象。 
+
+		hibernate.c3p0.max_statements:  缓存 Statement 对象的数量
+
+4. 映射java的时间,日期类型
+	1). 两个基础知识:
+		I. 在 Java 中, 代表时间和日期的类型包括: java.util.Date 和 java.util.Calendar. 此外, 在 JDBC API 中还提供了 3 个扩展了 java.util.Date 类的子类: java.sql.Date, java.sql.Time 和 java.sql.Timestamp, 这三个类分别和标准 SQL 类型中的 DATE, TIME 和 TIMESTAMP 类型对应
+		II. 在标准 SQL 中, DATE 类型表示日期, TIME 类型表示时间, TIMESTAMP 类型表示时间戳, 同时包含日期和时间信息. 
+	2). 如何进行映射?
+		I. 因为java.util.Date是java.sql.Date,Time,Timestamp的父类,所以java.util.Date可以
+			对应标准SQL类型中的,Date,Time,TIMESTAMP
+		II. 所以,在设置持久化类时,建议使用Java.util.Date
+		III.如何Java.util.Date映射到Date,Time,TIMESTAMP?
+			可以通过制定type的hibernate类型,进行映射.
+			如:
+			<property name="date" type="timestamp">
+            	<column name="DATE" />
+        	</property>
+			timestamp,time,date是Hibernate映射类型.
+			
+5. 二级缓存
+  1) 类级别的二级缓存
+	> EHcache的jar包:D:\文件系统\学习资料\插件框架\Hibernate\hibernate-release-4.3.6.Final\lib\optional\ehcache\3个jar包
+	> 配置文件:hibernate-release-4.3.6.Final\project\etc\ehcache.xml放到类路径.
+	> 配置cfg.xml文件:
+	    <!-- 启用二级缓存 -->
+    	<property name="cache.use_second_level_cache">true</property>
+    	<!-- 配置使用的二级缓存的产品 -->
+    	<property name="hibernate.cache.region.factory_class">在jar包中找到这个类的全路径名EhCacheRegionFactory,放在这就行了.</property>
+    	<!-- 配置对哪个类使用二级缓存.也可以在hbm.xml中配置使用二级缓存,以及策略,参考com.bin.hibernate.hql.entities.Department.hbm.xml -->
+    	<class-cache usage="read-only" class="com.bin.hibernate.hql.entities.Employee"/>
+    	
+    > 这样在关闭了session,下一个session依旧可以不用到数据库取Employee这个类的记录.
+
+   2) 集合级别二级缓存
+	> 注意:集合里的类,需要同时缓存(使用1)中的方式),否则,只缓存集合元素的iD,会多出n个sql,反而效率更低.
+    	<!-- 配置某个类的集合使用二级缓存:全类名+集合属性名 -->
+    	<collection-cache usage="read-only" collection="com.bin.hibernate.hql.entities.Department.emps"/>
+    	
+   3) ehcache的配置文件:ehcache.xml
+   
+   4) 查询缓存:默认情况下,设置的缓存对HQL及QBC查询是无效的.启用的步骤:
+   		>     	<!-- 配置 启用查询缓存 -->
+    			<property name="cache.use_query_cache">true</property>
+    	> 调用Query或setCacheable(true)方法.
+		> 查询缓存,依赖二级缓存.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

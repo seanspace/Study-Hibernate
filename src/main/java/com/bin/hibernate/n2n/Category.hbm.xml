@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2014-10-19 14:50:04 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping package="com.bin.hibernate.n2n">
+    <class name="Category" table="CATEGORIES">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <!-- table:指定中间表名 -->
+        <!-- inverse="true":双向多对多时必须有一端放弃维护权,否则会出现主键名相同 异常-->
+        <set name="items" table="CATEGORIES_ITEMS" inverse="true">
+            <key>
+                <column name="C_ID" />
+            </key>
+            <!-- 使用many-to-many指定多对多关联.column:执行set集合持久化类在中间表中的外键列的名称 -->
+            <many-to-many class="Item"  column="I_ID"/>
+        </set>
+    </class>
+</hibernate-mapping>
